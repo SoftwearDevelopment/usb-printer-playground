@@ -1,5 +1,8 @@
-const shortMessage = "Hello world",
-  cutSignal = "????";
+import * as CodepageEncoder from "codepage-encoder";
+
+const shortMessage = "\n\n\n\n\nHello world\n\n\n\n\n",
+  ESC = String.fromCharCode(27),
+  cutSignal = `\n\n\n\n\n${ESC}m`;
 
 let longMessage = "";
 
@@ -20,17 +23,18 @@ function reject(value) {
 }
 
 function print(text) {
-  // resolve("test");
-  // reject("test");
+  result.innerHTML = "waiting for the user";
 
   let foundDevice;
-  const data = "TODO";
+  const data = CodepageEncoder.encode("iso885915", text);
 
   navigator.usb
     .requestDevice({
       filters: [{ classCode: 7 }],
     })
     .then((device) => {
+      result.innerHTML = "waiting for result";
+
       console.log(device.manufacturerName, device.productName);
 
       foundDevice = device;
@@ -42,13 +46,14 @@ function print(text) {
     .then(() => {
       return foundDevice.transferOut(1, data);
     })
+    .then(resolve)
     .catch(reject);
 }
 
 document.querySelector("#short-print").addEventListener("click", () => {
-  print(shortMessage);
+  print(shortMessage + cutSignal);
 });
 
 document.querySelector("#long-print").addEventListener("click", () => {
-  print(longMessage);
+  print(longMessage + cutSignal);
 });
