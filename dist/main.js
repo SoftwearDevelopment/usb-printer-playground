@@ -562,6 +562,10 @@ function print(text) {
   let foundDevice;
   const data = codepage_encoder__WEBPACK_IMPORTED_MODULE_0__.encode("iso885915", text);
 
+  if (!navigator.usb) {
+    result.innerHTML = "Failed to print, navigator.usb is not available";
+  }
+
   navigator.usb
     .requestDevice({
       filters: [{ classCode: 7 }],

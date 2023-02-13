@@ -28,6 +28,10 @@ function print(text) {
   let foundDevice;
   const data = CodepageEncoder.encode("iso885915", text);
 
+  if (!navigator.usb) {
+    result.innerHTML = "Failed to print, navigator.usb is not available";
+  }
+
   navigator.usb
     .requestDevice({
       filters: [{ classCode: 7 }],
