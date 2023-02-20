@@ -7,9 +7,32 @@
     <script defer="defer" src="./main.js"></script>
   </head>
   <body>
-    <button id="short-print">Print short message</button>
+    <label
+      ><input
+        type="radio"
+        id="short-message"
+        name="message-type"
+        value="short"
+        checked
+      />Short message</label
+    >
 
-    <button id="long-print">Print long message</button>
+    <br />
+
+    <label
+      ><input
+        type="radio"
+        id="long-message"
+        name="message-type"
+        value="long"
+      />Long message</label
+    >
+
+    <br />
+
+    <button id="usb-print">Print with any usb device</button>
+
+    <button id="filtered-print">Print with class 7 usb device</button>
 
     <div id="result">waiting for result</div>
   </body>

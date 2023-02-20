@@ -568,7 +568,7 @@ function print(text) {
 
   navigator.usb
     .requestDevice({
-      filters: [{ classCode: 7 }],
+      filters: [],
     })
     .then((device) => {
       result.innerHTML = "waiting for result";

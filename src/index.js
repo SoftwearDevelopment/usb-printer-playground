@@ -10,6 +10,8 @@ for (let counter = 0; counter < 100; counter++) {
   longMessage += `line ${counter}\n`;
 }
 
+let message = shortMessage;
+
 const result = document.querySelector("#result");
 
 function resolve(value) {
@@ -22,17 +24,30 @@ function reject(value) {
   console.error("Rejected the promise with", value);
 }
 
-function print(text) {
-  result.innerHTML = "waiting for the user";
-
-  let foundDevice;
-  const data = CodepageEncoder.encode("iso885915", text);
-
+function getAnyUsbDevice() {
   if (!navigator.usb) {
     result.innerHTML = "Failed to print, navigator.usb is not available";
   }
 
-  navigator.usb
+  return navigator.usb
+    .requestDevice({
+      filters: [],
+    })
+    .then((device) => {
+      result.innerHTML = "waiting for result";
+
+      console.log(device.manufacturerName, device.productName);
+
+      return device;
+    });
+}
+
+function getClass7UsbDevice() {
+  if (!navigator.usb) {
+    result.innerHTML = "Failed to print, navigator.usb is not available";
+  }
+
+  return navigator.usb
     .requestDevice({
       filters: [{ classCode: 7 }],
     })
@@ -41,6 +56,23 @@ function print(text) {
 
       console.log(device.manufacturerName, device.productName);
 
+      return device;
+    });
+}
+
+function print(text, getDevice) {
+  result.innerHTML = "waiting for the user";
+
+  let foundDevice;
+
+  const data = CodepageEncoder.encode("iso885915", text);
+
+  if (!navigator.usb) {
+    result.innerHTML = "Failed to print, navigator.usb is not available";
+  }
+
+  getDevice()
+    .then((device) => {
       foundDevice = device;
 
       return device.open();
@@ -54,10 +86,18 @@ function print(text) {
     .catch(reject);
 }
 
-document.querySelector("#short-print").addEventListener("click", () => {
-  print(shortMessage + cutSignal);
+document.querySelector("#short-message").addEventListener("click", () => {
+  message = shortMessage;
 });
 
-document.querySelector("#long-print").addEventListener("click", () => {
-  print(longMessage + cutSignal);
+document.querySelector("#long-message").addEventListener("click", () => {
+  message = longMessage;
+});
+
+document.querySelector("#usb-print").addEventListener("click", () => {
+  print(message + cutSignal, getAnyUsbDevice);
+});
+
+document.querySelector("#filtered-print").addEventListener("click", () => {
+  print(message + cutSignal, getClass7UsbDevice);
 });
